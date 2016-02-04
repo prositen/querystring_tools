@@ -52,28 +52,25 @@
         {% endif %}
 
     <h2>Parameters</h2>
+        <table class="table table-bordered">
         {% for key in data.names|sort %}
-        <div class="row">
-            <div class="col-md-6 {% if key in data.removed%}alert-danger{% elif key in data.changed %}alert-warning{% endif %}" >
-                <div class="form-group">
+            <tr>
+                <td class="{% if key in data.removed %}alert-danger{% elif key in data.changed or key in data.added %}alert-warning{% endif %}">
                 {% if key not in data.added %}
                     <label class="control-label col-md-6" for="item-{{ loop.index }}">{{ key}}</label>
                     <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ old_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
-                </div>
-            </div>
-
-            <div class="col-md-6 {% if key in data.added or key in data.changed %}alert-success{% endif %}">
-                <div class="form-group">
+                </td>
+                <td class="{% if key in data.added or key in data.changed %}alert-success{% endif %}">
                 {% if key not in data.removed %}
                     <label class="control-label col-md-6" for="item-{{ loop.index }}">{{ key}}</label>
                     <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ new_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
-                </div>
-            </div>
-        </div>
+                </td>
+            </tr>
 
         {% endfor %}
+        </table>
     {% endif %}
 </div>
 </body>
