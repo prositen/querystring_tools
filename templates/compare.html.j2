@@ -1,0 +1,110 @@
+{% include 'header.html.j2' %}
+<body>
+
+<div class="container">
+    <div class="page-header"><h1>Compare query strings</h1></div>
+    <form class="form-horizontal" action="{{ url_for('compare') }}" method="POST">
+        <div class="form-group">
+            <div class="col-md-6">
+                <textarea class="form-control" placeholder="Paste query string 1 here" name="query1" id="query1" rows="5">{{ query1 }}</textarea>
+            </div>
+            <div class="col-md-6">
+                <textarea class="form-control" placeholder="Paste query string 2 here" name="query2" id="query2" rows="5">{{ query2 }}</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="submit" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" name="summary" id="summary" {% if summary %}checked="checked"{% endif %}>
+                <label for="summary" class="control-label">Show diff summary</label>
+            </div>
+        </div>
+    </form>
+
+    {% if values1 %}
+
+        {% if summary %}
+        <h2>Diff</h2>
+        <div class="row">
+            <div class="col-md-6">
+                {% if removed %}
+                    <h3>Removed</h3>
+                    {% for name, value in removed|dictsort %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <label class="control-label">{{ name }}</label> {{ value }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if added %}
+                    <h3>Added</h3>
+                    {% for name, value in added|dictsort %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <label class="control-label">{{ name }}</label> {{ value }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6"><h3>Changed from</h3></div>
+            <div class="col-md-6"><h3>Changed to</h3></div>
+        </div>
+
+        {% for name, value in changed|dictsort %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="control-label">{{ name }}</label>
+                    </div>
+                    {{ value[0] }}
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="control-label">{{ name }}</label> {{ value[1] }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h2>Parameters</h2>
+        {% for key in keys|sort %}
+        <div class="row">
+            <div class="col-md-6 {% if key in removed %}alert-error{% elif key in changed %}alert-warning"{% endif %}" >
+                <div class="form-group">
+                {% if key not in added %}
+                    <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
+                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ values1[key] }}" readonly="readonly"></div>
+                {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-6 {% if key in added or key in changed %}alert-success{% endif %}">
+                <div class="form-group">
+                {% if key not in removed %}
+                    <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
+                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ values2[key] }}" readonly="readonly"></div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+
+    {% endif %}
+</div>
+</body>
+{% include 'footer.html.j2' %}
