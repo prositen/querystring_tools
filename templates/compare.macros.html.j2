@@ -1,0 +1,17 @@
+{% macro text_cell(name, value) -%}
+    <div class="col-md-4"><label class="control-label">{{ name }}</label></div>
+    <div class="col-md-8">{{ value }}</div>
+{%- endmacro %}
+
+{% macro text_column(title, params) -%}
+<div class="col-md-6">
+    {% if params %}
+        <h3>{{ title }}</h3>
+        {% for name, value in params|dictsort %}
+            {{ text_cell(name,value) }}
+        {% endfor %}
+    {% endif %}
+</div>
+{%- endmacro %}
+
+

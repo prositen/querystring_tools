@@ -1,4 +1,5 @@
 {% include 'header.html.j2' %}
+{% import 'compare.macros.html.j2' as compare_macros %}
 <body>
 
 <div class="container">
@@ -6,10 +7,10 @@
     <form class="form-horizontal" action="{{ url_for('compare') }}" method="POST">
         <div class="form-group">
             <div class="col-md-6">
-                <textarea class="form-control" placeholder="Paste query string 1 here" name="query1" id="query1" rows="5">{{ query1 }}</textarea>
+                <textarea class="form-control" placeholder="Paste query string 1 here" name="old_values.query" id="old_values.query" rows="5">{{ old_values.query }}</textarea>
             </div>
             <div class="col-md-6">
-                <textarea class="form-control" placeholder="Paste query string 2 here" name="query2" id="query2" rows="5">{{ query2 }}</textarea>
+                <textarea class="form-control" placeholder="Paste query string 2 here" name="new_values.query" id="new_values.query" rows="5">{{ new_values.query }}</textarea>
             </div>
         </div>
         <div class="form-group">
@@ -23,87 +24,52 @@
         </div>
     </form>
 
-    {% if values1 %}
-
+    {% if old_values.params %}
         {% if summary %}
-        <h2>Diff</h2>
+    <h2>Diff</h2>
+    <div class="row">
+        {{ compare_macros.text_column("Removed", data.removed) }}
+        {{ compare_macros.text_column("Added", data.added) }}
+    </div>
+    <div class="row">
+        <div class="col-md-6"><h3>Changed from</h3></div>
+        <div class="col-md-6"><h3>Changed to</h3></div>
+    </div>
+    {% for name, value in data.changed|dictsort %}
         <div class="row">
             <div class="col-md-6">
-                {% if removed %}
-                    <h3>Removed</h3>
-                    {% for name, value in removed|dictsort %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="col-md-12">
-                                    <label class="control-label">{{ name }}</label> {{ value }}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                {{ compare_macros.text_cell(name, value[0]) }}
             </div>
             <div class="col-md-6">
-                {% if added %}
-                    <h3>Added</h3>
-                    {% for name, value in added|dictsort %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="col-md-12">
-                                    <label class="control-label">{{ name }}</label> {{ value }}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                {{ compare_macros.text_cell(name, value[1]) }}
             </div>
         </div>
+    {% endfor %}
+        {% endif %}
 
-        <div class="row">
-            <div class="col-md-6"><h3>Changed from</h3></div>
-            <div class="col-md-6"><h3>Changed to</h3></div>
-        </div>
-
-        {% for name, value in changed|dictsort %}
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="col-md-4">
-                        <label class="control-label">{{ name }}</label>
-                    </div>
-                    {{ value[0] }}
-                </div>
-                <div class="col-md-6">
-                    <div class="col-md-4">
-                        <label class="control-label">{{ name }}</label> {{ value[1] }}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    {% endif %}
     <h2>Parameters</h2>
-        {% for key in keys|sort %}
+        {% for key in data.names|sort %}
         <div class="row">
-            <div class="col-md-6 {% if key in removed %}alert-error{% elif key in changed %}alert-warning"{% endif %}" >
+            <div class="col-md-6 {% if key in data.removed %}alert-error{% elif key in data.changed %}alert-warning{% endif %}" >
                 <div class="form-group">
-                {% if key not in added %}
+                {% if key not in data.added %}
                     <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
-                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ values1[key] }}" readonly="readonly"></div>
+                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ old_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
                 </div>
             </div>
 
-            <div class="col-md-6 {% if key in added or key in changed %}alert-success{% endif %}">
+            <div class="col-md-6 {% if key in data.added or key in data.changed %}alert-success{% endif %}">
                 <div class="form-group">
-                {% if key not in removed %}
+                {% if key not in data.removed %}
                     <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
-                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ values2[key] }}" readonly="readonly"></div>
+                    <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ new_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
                 </div>
             </div>
         </div>
 
         {% endfor %}
-
-
     {% endif %}
 </div>
 </body>

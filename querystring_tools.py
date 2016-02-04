@@ -60,31 +60,31 @@ def parse():
 
 @app.route('/query/compare', methods=['GET', 'POST'])
 def compare():
-    params1 = {}
-    query1 = ""
-    params2 = {}
-    query2 = ""
+    old_params = {}
+    old_query = ""
+    new_params = {}
+    new_query = ""
     summary = False
     added, removed, changed, keys = dict(), dict(), dict(), dict()
     if request.method == 'POST':
         if 'query1' in request.form:
-            query1 = request.form['query1']
-            params1 = parse_string(query1)
+            old_query = request.form['query1']
+            old_params = parse_string(old_query)
         if 'query2' in request.form:
-            query2 = request.form['query2']
-            params2 = parse_string(query2)
+            new_query = request.form['query2']
+            new_params = parse_string(new_query)
         if 'summary' in request.form:
             summary = True
-        added, removed, changed, keys = diff(params1, params2)
+        added, removed, changed, keys = diff(old_params, new_params)
     return render_template('compare.html.j2',
-                           query1=query1,
-                           query2=query2,
-                           values1=params1,
-                           values2=params2,
-                           keys=keys,
-                           added=added,
-                           removed=removed,
-                           changed=changed,
+                           old_values={'query': old_query,
+                                       'params': old_params},
+                           new_values={'query': new_query,
+                                       'params': new_params},
+                           data={'names': keys,
+                                 'added': added,
+                                 'removed': removed,
+                                 'changed': changed},
                            summary=summary)
 
 
