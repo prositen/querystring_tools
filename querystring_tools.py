@@ -1,4 +1,4 @@
-import urllib.request
+import urllib.request, urllib.parse
 from flask import Flask, request
 from flask import render_template
 
@@ -8,16 +8,8 @@ app = Flask(__name__)
 def parse_string(query):
     if not query:
         return dict()
-    params = dict()
-    unquote_query = urllib.request.unquote(query.strip())
-    for item in unquote_query.split('&'):
-        nv = item.split('=', 2)
-        name = nv[0]
-        value = ""
-        if len(nv) == 2:
-            value = nv[1]
-        params[name] = value
-    return params
+    params = urllib.parse.parse_qs(query)
+    return {n: ','.join(v) for n,v in params.items() }
 
 
 def diff(old_params, new_params):
