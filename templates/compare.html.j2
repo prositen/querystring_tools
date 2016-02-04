@@ -2,15 +2,19 @@
 {% import 'compare.macros.html.j2' as compare_macros %}
 <body>
 
+<header>
+    <div class="container">
+        <div class="page-header"><h1>Compare query strings</h1></div>
+    </div>
+</header>
 <div class="container">
-    <div class="page-header"><h1>Compare query strings</h1></div>
     <form class="form-horizontal" action="{{ url_for('compare') }}" method="POST">
         <div class="form-group">
             <div class="col-md-6">
-                <textarea class="form-control" placeholder="Paste query string 1 here" name="old_values.query" id="old_values.query" rows="5">{{ old_values.query }}</textarea>
+                <textarea class="form-control" placeholder="Paste query string 1 here" name="query1" id="query1" rows="5">{{ old_values.query }}</textarea>
             </div>
             <div class="col-md-6">
-                <textarea class="form-control" placeholder="Paste query string 2 here" name="new_values.query" id="new_values.query" rows="5">{{ new_values.query }}</textarea>
+                <textarea class="form-control" placeholder="Paste query string 2 here" name="query2" id="query2" rows="5">{{ new_values.query }}</textarea>
             </div>
         </div>
         <div class="form-group">
@@ -50,10 +54,10 @@
     <h2>Parameters</h2>
         {% for key in data.names|sort %}
         <div class="row">
-            <div class="col-md-6 {% if key in data.removed %}alert-error{% elif key in data.changed %}alert-warning{% endif %}" >
+            <div class="col-md-6 {% if key in data.removed%}alert-danger{% elif key in data.changed %}alert-warning{% endif %}" >
                 <div class="form-group">
                 {% if key not in data.added %}
-                    <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
+                    <label class="control-label col-md-6" for="item-{{ loop.index }}">{{ key}}</label>
                     <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ old_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
                 </div>
@@ -62,7 +66,7 @@
             <div class="col-md-6 {% if key in data.added or key in data.changed %}alert-success{% endif %}">
                 <div class="form-group">
                 {% if key not in data.removed %}
-                    <label class="control-label col-md-4" for="item-{{ loop.index }}">{{ key}}</label>
+                    <label class="control-label col-md-6" for="item-{{ loop.index }}">{{ key}}</label>
                     <div class="col-md-6"><input class="form-control" type="text" id="item-{{ loop.index }}" value="{{ new_values.params[key] }}" readonly="readonly"></div>
                 {% endif %}
                 </div>
